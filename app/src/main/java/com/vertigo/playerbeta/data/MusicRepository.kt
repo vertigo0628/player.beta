@@ -23,7 +23,8 @@ class MusicRepository(private val context: Context) {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.DURATION
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DATE_ADDED
         )
         //only get actual music files (IS_MUSIC != 0)
         val filter = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
@@ -43,6 +44,7 @@ class MusicRepository(private val context: Context) {
             val artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
             val albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
             val durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+            val dateAddedColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATE_ADDED)
 
             //go through every song found
             while (cursor.moveToNext()) {
@@ -58,7 +60,8 @@ class MusicRepository(private val context: Context) {
                         uri = ContentUris.withAppendedId(
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             id
-                        )
+                        ),
+                        dateAdded = cursor.getLong(dateAddedColumn)
                     )
                 )
             }

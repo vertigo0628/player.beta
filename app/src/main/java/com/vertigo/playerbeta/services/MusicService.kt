@@ -188,6 +188,22 @@ class MusicService : Service() {
     fun getCurrentSong() = playerManager.getCurrentSong()
     fun setOnCompleteListener(callback: () -> Unit) = playerManager.setOnCompleteListener(callback)
 
+    // Equalizer methods
+    fun setEqualizerEnabled(enabled: Boolean) = playerManager.setEqualizerEnabled(enabled)
+    fun getEqualizerPresets() = playerManager.getEqualizerPresets()
+    fun usePreset(presetIndex: Short) = playerManager.usePreset(presetIndex)
+    fun setBandLevel(band: Short, level: Short) = playerManager.setBandLevel(band, level)
+    fun setBassBoost(strength: Short) = playerManager.setBassBoost(strength)
+    fun getBandLevel(band: Short) = playerManager.getBandLevel(band)
+    fun getBassBoostStrength() = playerManager.getBassBoostStrength()
+    fun isEqualizerEnabled() = playerManager.isEqualizerEnabled()
+    fun getNumberOfBands() = playerManager.getNumberOfBands()
+    fun getBandCenterFreq(band: Short) = playerManager.getBandCenterFreq(band)
+    fun getBandLevelRange() = playerManager.getBandLevelRange()
+    fun getCurrentPreset() = playerManager.getCurrentPreset()
+
+    fun setNextSong(song: AudioFile?) = playerManager.setNextSong(song)
+
     //create the notification channel -required for android 8+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

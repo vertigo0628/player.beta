@@ -4,16 +4,21 @@ Player.beta is a modern, lightweight Android music player built entirely with **
 
 ## ✨ Features
 
-- **Local Music Library**: Automatically scans your device for audio files using MediaStore.
-- **Background Playback**: Keep the music going even when the app is minimized, thanks to a robust Foreground Service.
-- **Modern UI**: Built with Jetpack Compose and Material 3 for a beautiful, responsive experience.
-- **Playback Controls**:
-    - Play/Pause, Skip Next, Skip Previous.
-    - Interactive Seek Bar.
-    - Shuffle and Repeat modes (Off, All, One).
-- **Persistent Notifications**: Control your music directly from the Android notification drawer.
-- **Dynamic Updates**: Listens for system media scans to update your library as soon as new music is added.
-- **Permission Handling**: Seamlessly handles storage permissions for Android 13+ (Media Audio) and older versions.
+- **Advanced Library Organization**: Browse music by **Songs**, **Albums**, **Artists**, **Folders**, and **Playlists**.
+- **Deep Search**: Instant and recursive search across your entire local library.
+- **Material You Design**: Personalize your player with dynamic colors that match your device's wallpaper.
+- **Smart Playlists**: Automatic collection of **Favorites**, **Recently Added**, and **Recently Played** tracks.
+- **Audio Enhancements**:
+    - **5-Band Equalizer** with manual tuning.
+    - **System Presets** (Pop, Rock, Jazz, etc.).
+    - **Bass Boost** for enhanced low-frequency performance.
+- **Gapless Playback**: Seamlessly transition between tracks with zero gaps (pre-loaded next track).
+- **Sleep Timer**: Schedule playback to stop automatically after a set duration.
+- **Background Playback**: High-performance foreground service for uninterrupted listening.
+- **Modern UI**: Clean, responsive design built with Jetpack Compose and Material 3.
+- **Playlist Management**: Create, view, and organize your favorite music into custom playlists.
+- **Dynamic Updates**: Real-time library syncing with Android MediaStore.
+- **Permission Support**: Full support for Android 13+ and legacy storage permissions.
 
 ## 🛠️ Tech Stack
 
