@@ -56,9 +56,6 @@ The app requires the following permissions to function:
 - `FOREGROUND_SERVICE`: To maintain playback when the app is in the background.
 - `FOREGROUND_SERVICE_MEDIA_PLAYBACK`: Required for media playback on Android 14+.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 Developed with ❤️ by [Vertigo]
