@@ -7,7 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
+import androidx.core.content.ContextCompat
 import android.provider.MediaStore
 
 //this class listens for new music files added
@@ -40,12 +40,13 @@ class MediaScanReceiver : BroadcastReceiver() {
             addAction(Intent.ACTION_MEDIA_SCANNER_FINISHED)
             addDataScheme("file")
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(this, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            context.registerReceiver(this, filter)
-        }
-
+        // Use ContextCompat to register the receiver with the NOT_EXPORTED flag safely across Android versions
+        ContextCompat.registerReceiver(
+            context,
+            this,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     //unregister when app closes to save battery
