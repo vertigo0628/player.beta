@@ -12,6 +12,7 @@ data class AudioFile(
     val artist: String,  //name of artist
     val album: String,  //name of album
     val duration: Long,  //length of song
-    val uri: Uri  //location where the song is stored
+    val uri: Uri,  //location where the song is stored
+    val source : String = "Device"  //where the song is coming from
 
 )

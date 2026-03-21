@@ -4,13 +4,14 @@ package com.vertigo.playerbeta.data
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
+import android.provider.OpenableColumns
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 //this class finds music files stored on the phone
-class MusicRepository (private val context: Context) {
-
+class MusicRepository(private val context: Context) {
 
     //this line below runs on the background thread so ui doesnt freeze
     suspend fun getSongs(): List<AudioFile> = withContext(Dispatchers.IO) {
@@ -56,11 +57,50 @@ class MusicRepository (private val context: Context) {
                         duration = cursor.getLong(durationColumn),
                         uri = ContentUris.withAppendedId(
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                            id)
+                            id
+                        )
                     )
                 )
             }
         }
         songs
+    }
+
+    fun getAudioFromUri(uri: Uri, source: String = "Imported"): AudioFile? {
+        var title: String? = null
+
+        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            if (cursor.moveToFirst()) {
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    title = cursor.getString(nameIndex)
+                    title = title?.substringBeforeLast(".")
+                }
+            }
+        }
+        
+        if (title.isNullOrBlank()) {
+            title = uri.lastPathSegment?.substringBeforeLast(".") ?: "Unknown song"
+        }
+
+        //try to get duration
+        val duration = try {
+            val mmr = android.media.MediaMetadataRetriever()
+            mmr.setDataSource(context, uri)
+            val dur = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION)
+            mmr.release()
+            dur?.toLongOrNull() ?: 0
+        } catch (e: Exception) {
+            0L
+        }
+
+        return AudioFile(
+            id = uri.toString().hashCode().toLong(),
+            title = title ?: "Unknown song",
+            artist = if (source == "shared") "Shared from app" else "Imported",
+            album = source,
+            duration = duration,
+            uri = uri
+        )
     }
 }

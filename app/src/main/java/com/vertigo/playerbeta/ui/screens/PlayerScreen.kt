@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -38,10 +40,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vertigo.playerbeta.MainActivity
 import com.vertigo.playerbeta.data.AudioFile
 import com.vertigo.playerbeta.player.RepeatMode
 import com.vertigo.playerbeta.viewmodel.PlayerViewModel
@@ -49,13 +53,22 @@ import com.vertigo.playerbeta.viewmodel.PlayerViewModel
 //main screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(viewModel: PlayerViewModel) {
+fun PlayerScreen(viewModel: PlayerViewModel, activity: MainActivity) {
+    LaunchedEffect(Unit) {
+        viewModel.checkForPendingImports(activity)
+    }
     val state = viewModel.playerState
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("V-Player(Beta)") },
+                actions = {
+                    //new import button
+                    IconButton(onClick = { activity.openFilePicker() }) {
+                        Icon(Icons.Default.Add, contentDescription = "Import from files")
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
@@ -88,14 +101,67 @@ fun PlayerScreen(viewModel: PlayerViewModel) {
             Spacer(modifier = Modifier.height(8.dp))
 
             //bottom section - scrollable list of all songs
-            LazyColumn(modifier = Modifier.weight(1f)) {
-                items(viewModel.songs) { song ->
-                    SongListItem(
-                        song = song,
-                        isCurrentSong = state.currentSong?.id == song.id,
-                        isPlaying = state.isPlaying && state.currentSong?.id == song.id,
-                        onSongClick = { viewModel.playSong(song) }
-                    )
+            LazyColumn {
+                if (viewModel.sharedSongs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Shared from apps (${viewModel.sharedSongs.size})",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(16.dp, 8.dp)
+                        )
+                    }
+                    items(viewModel.sharedSongs) { song ->
+                        SongListItem(
+                            song = song,
+                            isCurrentSong = state.currentSong?.id == song.id,
+                            isPlaying = state.isPlaying && state.currentSong?.id == song.id,
+                            onSongClick = { viewModel.playSong(song) },
+                            onRemove = { viewModel.removedImportedSong(song) }
+                        )
+                    }
+                }
+
+                //imported from files
+                if (viewModel.importedSongs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "Imported from files (${viewModel.importedSongs.size})",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(16.dp, 8.dp)
+                        )
+                    }
+                    items(viewModel.importedSongs) { song ->
+                        SongListItem(
+                            song = song,
+                            isCurrentSong = state.currentSong?.id == song.id,
+                            isPlaying = state.isPlaying && state.currentSong?.id == song.id,
+                            onSongClick = { viewModel.playSong(song) },
+                            onRemove = { viewModel.removedImportedSong(song) }
+                        )
+                    }
+                }
+
+                //device songs
+                if (viewModel.deviceSongs.isNotEmpty()) {
+                    item {
+                        Text(
+                            "On device Songs (${viewModel.deviceSongs.size})",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(16.dp, 8.dp)
+                        )
+                    }
+                    items(viewModel.deviceSongs) { song ->
+                        SongListItem(
+                            song = song,
+                            isCurrentSong = state.currentSong?.id == song.id,
+                            isPlaying = state.isPlaying && state.currentSong?.id == song.id,
+                            onSongClick = { viewModel.playSong(song) },
+                            onRemove = null
+                        )
+                    }
                 }
             }
         }
@@ -187,7 +253,11 @@ fun PlayerControls(
                 horizontalArrangement = Arrangement.spacedBy(32.dp)
             ) {
                 IconButton(onClick = onPrevious) {
-                    Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(48.dp))
+                    Icon(
+                        Icons.Default.SkipPrevious,
+                        contentDescription = "Previous",
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
                 //Big play/pause button
                 FilledIconButton(
@@ -202,7 +272,11 @@ fun PlayerControls(
                 }
 
                 IconButton(onClick = onNext) {
-                    Icon(Icons.Default.SkipNext, contentDescription = "Next", modifier = Modifier.size(48.dp))
+                    Icon(
+                        Icons.Default.SkipNext,
+                        contentDescription = "Next",
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
             }
 
@@ -246,7 +320,8 @@ fun SongListItem(
     song: AudioFile,
     isCurrentSong: Boolean,
     isPlaying: Boolean,
-    onSongClick: () -> Unit
+    onSongClick: () -> Unit,
+    onRemove: (() -> Unit)? = null //optional remove button
 ) {
     ListItem(
         headlineContent = {
@@ -264,6 +339,17 @@ fun SongListItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        },
+        trailingContent = {
+            onRemove?.let {
+                IconButton(onClick = it) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         },
         leadingContent = {
             Icon(
