@@ -33,20 +33,25 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    //checks if we have permission to read music files
+    //checks if we have permission to read music files and show notifications
     private fun checkAndRequestPermissions() {
-        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(Manifest.permission.READ_MEDIA_AUDIO)
+        val permissionsList = mutableListOf<String>()
+
+        // Storage permissions
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionsList.add(Manifest.permission.READ_MEDIA_AUDIO)
+            // Notification permission (Required for Android 13+)
+            permissionsList.add(Manifest.permission.POST_NOTIFICATIONS)
         } else {
-            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissionsList.add(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-        //FIND WHICH PERMISSION WE DONT HAVE YET
-        val needPermission = permissions.filter {
+        // FIND WHICH PERMISSIONS WE DONT HAVE YET
+        val needPermission = permissionsList.filter {
             ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
 
-        //Request missing permissions
+        // Request missing permissions
         if (needPermission.isNotEmpty()) {
             permissionLauncher.launch(needPermission.toTypedArray())
         }

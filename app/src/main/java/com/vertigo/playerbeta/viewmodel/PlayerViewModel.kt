@@ -38,8 +38,27 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicBinder
-            musicService = binder.getService()
+            val serviceInstance = binder.getService()
+            musicService = serviceInstance
             serviceBound = true
+
+            // SYNC STATE: Check if music is already playing in the background (e.g. returning from notification)
+            val current = serviceInstance.getCurrentSong()
+            if (current != null) {
+                playerState = playerState.copy(
+                    currentSong = current,
+                    isPlaying = serviceInstance.isPlaying()
+                )
+                if (serviceInstance.isPlaying()) {
+                    startProgressTracking()
+                }
+            }
+
+            //CONNECT NOTIFICATION BUTTONS TO VIEWMODEL
+            musicService?.setOnNotificationAction { action ->
+                handleNotificationAction(action)
+            }
+
 
             //when song finishes naturally -play next
             musicService?.setOnCompleteListener { playNext() }
@@ -49,6 +68,15 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
         override fun onServiceDisconnected(name: ComponentName?) {
             musicService = null
             serviceBound = false
+        }
+    }
+
+    //called when user presses buttons on notification
+    private fun handleNotificationAction(action: String) {
+        when (action) {
+            "PLAY_PAUSE" -> togglePlayPause()
+            "NEXT" -> playNext()
+            "PREVIOUS" -> playPrevious()
         }
     }
 

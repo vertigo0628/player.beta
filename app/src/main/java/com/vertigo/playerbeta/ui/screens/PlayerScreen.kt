@@ -55,7 +55,7 @@ fun PlayerScreen(viewModel: PlayerViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Music Player") },
+                title = { Text("V-Player(Beta)") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
