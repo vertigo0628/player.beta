@@ -388,7 +388,7 @@ class PlayerViewModel(application: Application) : AndroidViewModel(application) 
             _recentlyPlayedSongs.remove(song)
         }
         _recentlyPlayedSongs.add(0, song)
-        if (_recentlyPlayedSongs.size > 20) _recentlyPlayedSongs.removeLast()
+        if (_recentlyPlayedSongs.size > 20) _recentlyPlayedSongs.removeAt(_recentlyPlayedSongs.size - 1)
 
         musicService?.play(song)
         playerState = playerState.copy(currentSong = song, isPlaying = true)
