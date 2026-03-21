@@ -16,7 +16,6 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationCompat
-import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media.session.MediaButtonReceiver
 import com.vertigo.playerbeta.MainActivity
 import com.vertigo.playerbeta.R
@@ -62,10 +61,6 @@ class MusicService : Service() {
             //set flags so media controls work on lockscreen
             setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS or MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS)
             
-            // This is key for lockscreen controls!
-            val mediaButtonIntent = Intent(Intent.ACTION_MEDIA_BUTTON, null, applicationContext, MediaButtonReceiver::class.java)
-            setMediaButtonReceiver(PendingIntent.getBroadcast(applicationContext, 0, mediaButtonIntent, PendingIntent.FLAG_IMMUTABLE))
-
             //set callbacks for playback controls handles clicks from notification/lock screen
             setCallback(object : MediaSessionCompat.Callback() {
                 override fun onPlay() {

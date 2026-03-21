@@ -25,31 +25,19 @@
             android:exported="true">
 
             <intent-filter>
-
-                <action android:name="android.intent.action.VIEW" />  <!-- Allows "Opening" a file directly with your app -->
-                <action android:name="android.intent.action.SEND" />    <!-- Allows sharing a file with other apps -->
-                <action android:name="android.intent.action.SEND_MULTIPLE" />  <!-- Allows sharing multiple files with other apps -->
-
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="audio/*"/>  <!-- Allows sharing audio files -->
-                <data android:mimeType="video/*"/>  <!--opening video files-->
+                <data android:mimeType="audio/*"/>
+                <data android:mimeType="video/*"/>
             </intent-filter>
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-
-        <intent-filter>
-            <action android:name="android.intent.action.SEND_MULTIPLE" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="audio/*" />
-            <data android:mimeType="video/*" />
-        </intent-filter>
-
         </activity>
-
 
         <service
             android:name=".services.MusicService"
