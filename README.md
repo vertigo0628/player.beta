@@ -1,4 +1,4 @@
-# Player.beta 🎵
+# Player.beta 🎵 
 
 Player.beta is a modern, lightweight Android music player built entirely with **Jetpack Compose** and **Material 3**. It allows users to browse and play local audio files with a clean, intuitive interface and background playback support.
 
